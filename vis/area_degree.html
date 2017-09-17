@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Visualziacion suicidios por nivel de estudios y area residencial">
+    <meta name="author" content="Camilo Mera">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <link href="../styles/vis.css" rel="stylesheet" />
+</head>
+
+<body>
+    <script src="../scripts/d3.v4.min.js"></script>
+    <script>
+
+    var margin = {top: 20, right:20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+    var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom),
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleBand()
+    .rangeRound([0, width])
+    .paddingInner(0.05)
+    .align(0.1);
+
+    var y = d3.scaleLinear()
+    .rangeRound([height, 0]);
+
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    d3.tsv("../data/area_degree.tsv", function(d, i, columns) {
+      for (i = 1, t = 0; i < columns.length; ++i)
+         t += d[columns[i]] = +d[columns[i]];
+         d.Total = t;
+         return d;
+     }, function(error, data) {
+      if (error) console.log(error);
+      else {
+        var keys = data.columns.slice(1);
+
+        data.sort(function(a, b) { return b.Total - a.Total; });
+        x.domain(data.map(function(d) { return d.Nivel; }));
+        y.domain([0, d3.max(data, function(d) { return d.Total; })]).nice();
+        color.domain(keys);
+
+        g.append("g")
+        .selectAll("g")
+        .data(d3.stack().keys(keys)(data))
+        .enter().append("g")
+        .attr("fill", function(d) { return color(d.key); })
+        .selectAll("rect")
+        .data(function(d) { return d; })
+        .enter().append("rect")
+        .attr("x", function(d) { return x(d.data.Nivel); })
+        .attr("y", function(d) { return y(d[1]); })
+        .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+        .attr("width", x.bandwidth());
+
+        g.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+        // .append("text")
+        //   .attr("fill", "#000")
+        //   .attr("class", "label")
+        //   .attr("x", width)
+        //   .attr("y", -30)
+        //   .style("text-anchor", "end")
+        //   .text("Nivel Estudios");
+
+        g.append("g")
+        .attr("class", "axis")
+        .call(d3.axisLeft(y).ticks(null, "s"))
+        .append("text")
+        .attr("x", 2)
+        .attr("y", y(y.ticks().pop()) + 0.5)
+        .attr("dy", "0.32em")
+        .attr("fill", "#000")
+        .attr("font-weight", "bold")
+        .attr("text-anchor", "start")
+        .text("Total");
+
+        var legend = g.append("g")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", 10)
+        .attr("text-anchor", "end")
+        .selectAll("g")
+        .data(keys.slice().reverse())
+        .enter().append("g")
+        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+        legend.append("rect")
+        .attr("x", width - 19)
+        .attr("width", 19)
+        .attr("height", 19)
+        .attr("fill", color);
+
+        legend.append("text")
+        .attr("x", width - 24)
+        .attr("y", 9.5)
+        .attr("dy", "0.32em")
+        .text(function(d) { return d; });
+    }
+
+
+});
+</script>
+</body>
+
+</html>
