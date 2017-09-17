@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Visualziacion suicidios por edad, area residencial para hombres">
+    <meta name="description" content="Visualziacion suicidios por area residencial para hombres">
     <meta name="author" content="Camilo Mera">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
@@ -52,16 +52,18 @@ d3.tsv("../data/year_area_male.tsv", function(error, data) {
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
     .append("text")
+      .attr("fill", "#000")
       .attr("class", "label")
       .attr("x", width)
       .attr("y", -6)
       .style("text-anchor", "end")
-      .text("Year");
+      .text("Año");
 
   svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
     .append("text")
+      .attr("fill", "#000")
       .attr("class", "label")
       .attr("transform", "rotate(-90)")
       .attr("y", 6)

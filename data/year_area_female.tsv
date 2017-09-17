@@ -1,16 +1,16 @@
-Año	Area	Genero	Total
-2010	Rural	Femenino	5
-2010	Urbana	Femenino	5
-2011	Rural	Femenino	4
-2011	Urbana	Femenino	9
-2012	Urbana	Femenino	2
-2012	Rural	Femenino	4
-2013	Rural	Femenino	3
-2013	Urbana	Femenino	4
-2014	Rural	Femenino	6
-2014	N/A	Femenino	1
-2014	Urbana	Femenino	7
-2015	Rural	Femenino	2
-2015	Urbana	Femenino	15
-2016	Rural	Femenino	1
-2016	Urbana	Femenino	4
+Year	Area	Total
+2010	Rural	5
+2010	Urbana	5
+2011	Rural	4
+2011	Urbana	9
+2012	Urbana	2
+2012	Rural	4
+2013	Rural	3
+2013	Urbana	4
+2014	Rural	6
+2014	N/A	1
+2014	Urbana	7
+2015	Rural	2
+2015	Urbana	15
+2016	Rural	1
+2016	Urbana	4
