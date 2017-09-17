@@ -2,52 +2,52 @@
 <html lang="es">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Visualziacion suicidios por area residencial para mujeres">
-    <meta name="author" content="Camilo Mera">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-    <link href="../styles/vis.css" rel="stylesheet" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Visualziacion suicidios por area residencial para mujeres">
+  <meta name="author" content="Camilo Mera">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <link href="../styles/vis.css" rel="stylesheet" />
 </head>
 
 <body>
-    <script src="../scripts/d3.v4.min.js"></script>
-    <script>
+  <script src="../scripts/d3.v4.min.js"></script>
+  <script>
 
-var margin = {top: 20, right:20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+  var margin = {top: 20, right:20, bottom: 30, left: 40},
+  width = 960 - margin.left - margin.right,
+  height = 500 - margin.top - margin.bottom;
 
-var scaleX = d3.scaleLinear().range([0, width]);
+  var scaleX = d3.scaleLinear().range([0, width]);
 
-var scaleY = d3.scaleLinear().range([height, 0]);
+  var scaleY = d3.scaleLinear().range([height, 0]);
 
-var color = d3.scaleOrdinal(d3.schemeCategory10);
+  var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-var xAxis = d3.axisBottom(scaleX);
+  var xAxis = d3.axisBottom(scaleX);
 
-var yAxis = d3.axisLeft(scaleY);
+  var yAxis = d3.axisLeft(scaleY);
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var svg = d3.select("body").append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.tsv("../data/year_area_female.tsv", function(error, data) {
-  if (error) console.log(error);
-  else{
+  d3.tsv("../data/year_area_female.tsv", function(error, data) {
+    if (error) console.log(error);
+    else{
 
-  data.forEach(function(d) {
-    d.Total = +d.Total;
-    d.Year = +d.Year;
-  });
+      data.forEach(function(d) {
+        d.Total = +d.Total;
+        d.Year = +d.Year;
+      });
 
-  scaleX.domain(d3.extent(data, function(d) { return d.Year; })).nice();
-  scaleY.domain(d3.extent(data, function(d) { return d.Total; })).nice();
+      scaleX.domain(d3.extent(data, function(d) { return d.Year; })).nice();
+      scaleY.domain(d3.extent(data, function(d) { return d.Total; })).nice();
 
-  svg.append("g")
+      svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
@@ -59,7 +59,7 @@ d3.tsv("../data/year_area_female.tsv", function(error, data) {
       .style("text-anchor", "end")
       .text("Año");
 
-  svg.append("g")
+      svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
       .append("text")
@@ -71,35 +71,35 @@ d3.tsv("../data/year_area_female.tsv", function(error, data) {
       .style("text-anchor", "end")
       .text("Total")
 
-  svg.selectAll(".dot")
+      svg.selectAll(".dot")
       .data(data)
-    .enter().append("circle")
+      .enter().append("circle")
       .attr("class", "dot")
       .attr("r", 3.5)
       .attr("cx", function(d) { return scaleX(d.Year); })
       .attr("cy", function(d) { return scaleY(d.Total); })
       .style("fill", function(d) { return color(d.Area); });
 
-  var legend = svg.selectAll(".legend")
+      var legend = svg.selectAll(".legend")
       .data(color.domain())
-    .enter().append("g")
+      .enter().append("g")
       .attr("class", "legend")
       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-  legend.append("rect")
+      legend.append("rect")
       .attr("x", width - 18)
       .attr("width", 18)
       .attr("height", 18)
       .style("fill", color);
 
-  legend.append("text")
+      legend.append("text")
       .attr("x", width - 24)
       .attr("y", 9)
       .attr("dy", ".35em")
       .style("text-anchor", "end")
       .text(function(d) { return d; });
-  }
-});
+    }
+  });
 
 </script>
 </body>
