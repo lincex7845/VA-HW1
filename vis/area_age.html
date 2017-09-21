@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 
+  <!-- Mariana Villamizar -->
+  <!-- Los comentarios que hago en este archivo aplican para las 4 visualizaciones que realizaste -->
+  
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,6 +15,10 @@
 </head>
 
 <body>
+  <!-- Mariana Villamizar -->
+  <!-- Es buena práctica tener el javascript separado del html. Te recomiendo ponerlo en un archivo aparte
+       y guardarlo en la carpeta scripts-->
+  <!-- Para asegurarte de tener la última versión de D3, puedes poner un CDN en la sección <head>-->
   <script src="../scripts/d3.v4.min.js"></script>
   <script>
 
@@ -44,6 +51,14 @@
         d.Edad = +d.Edad;
       });
 
+      //Mariana Villamizar
+      //Acá podras agregar un filtro para que te muestre los datos seleccionando el área (Rural, Urbana, N/A) o dejando el total
+      //sin tener en cuenta el área. Esto porque en ambos tipos de visualizaciones se vuelve complicado para el usuario
+      //calcular y comparar los totales. Ahora, si el área no tiene que ver con la tarea, sería preferible quitar ese channel.
+      
+      //Este filtro puedes hacerlo con d3.filter() y pasar los datos que te retorna esta función como los datos para dibujar
+      //el gráfico. Debes implementar el enter(), el selectAll() y el exit() de una forma un poquito distinta, pero no es complejo.
+      
       scaleX.domain(d3.extent(data, function(d) { return d.Edad; })).nice();
       scaleY.domain(d3.extent(data, function(d) { return d.Total; })).nice();
 
