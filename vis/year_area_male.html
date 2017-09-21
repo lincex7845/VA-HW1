@@ -1,3 +1,7 @@
+<!--Mariana Villamizar-->
+<!--Aquí está la implementación de los filtros que sugerí en los comentarios anteriores. Están solo en esta
+visualización, pero es fácil adaptarlos a las otras-->
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -12,12 +16,18 @@
 </head>
 
 <body>
+  <div>
+    <h3>Filtro por Área</h3>
+    <button id="Todas" style="background-color: #7f7f7f; color: #fff;">Todas</button>
+    <button id="Rural" style="background-color: #1f77b4; color: #fff;">Rural</button>
+    <button id="Urbana" style="background-color: #ff7f0e; color: #fff;">Urbana</button>
+    <button id="N/A" style="background-color: #2ca02c; color: #fff;">N/A</button>
+  </div>
   <script src="../scripts/d3.v4.min.js"></script>
   <script>
-
-  var margin = {top: 20, right:20, bottom: 30, left: 40},
-  width = 960 - margin.left - margin.right,
-  height = 500 - margin.top - margin.bottom;
+  var margin = { top: 20, right: 20, bottom: 30, left: 40 };
+  (width = 960 - margin.left - margin.right),
+    (height = 500 - margin.top - margin.bottom);
 
   var scaleX = d3.scaleLinear().range([0, width]);
 
@@ -25,83 +35,160 @@
 
   var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-  var xAxis = d3.axisBottom(scaleX);
+  var yAxis = d3.axisLeft(scaleY).tickSizeOuter(0);
 
-  var yAxis = d3.axisLeft(scaleY);
+  var xAxis = d3.axisBottom(scaleX).tickSizeOuter(0);
 
-  var svg = d3.select("body").append("svg")
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var svg = d3
+    .select("body")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  svg
+    .append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+    .append("text")
+    .attr("fill", "#000")
+    .attr("class", "label")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("Total suicidios");
+
+  svg
+    .append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .attr("x", width)
+    .attr("y", -6)
+    .call(xAxis)
+    .append("text")
+    .attr("fill", "#000")
+    .attr("class", "label")
+    .attr("x", width)
+    .attr("y", -6)
+    .style("text-anchor", "end")
+    .text("Año");
 
   d3.tsv("../data/year_area_male.tsv", function(error, data) {
     if (error) console.log(error);
-    else{
-
+    else {
       data.forEach(function(d) {
         d.Total = +d.Total;
         d.Year = +d.Year;
+        d.Area = d.Area;
       });
 
-      scaleX.domain(d3.extent(data, function(d) { return d.Year; })).nice();
-      scaleY.domain(d3.extent(data, function(d) { return d.Total; })).nice();
+      //Llamar a la funcion display cuando se haga click en un boton y enviar por parametro el id del boton
+      //para saber que filtro aplicar
+      d3.selectAll("button").on("click", function() {
+        display(this.id);
+      });
 
-      svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
-      .append("text")
-      .attr("fill", "#000")
-      .attr("class", "label")
-      .attr("x", width)
-      .attr("y", -6)
-      .style("text-anchor", "end")
-      .text("Año");
+      display("Todas");
 
-      svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .append("text")
-      .attr("fill", "#000")
-      .attr("class", "label")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Total")
+      function display(areaFilter) {
+        var filteredData;
+        if (areaFilter == "Todas") {
+          filteredData = data;
+        } else {
+          //Aplicar filtro si lo hay
+          filteredData = data.filter(function(d) {
+            return d.Area == areaFilter;
+          });
+        }
 
-      svg.selectAll(".dot")
-      .data(data)
-      .enter().append("circle")
-      .attr("class", "dot")
-      .attr("r", 3.5)
-      .attr("cx", function(d) { return scaleX(d.Year); })
-      .attr("cy", function(d) { return scaleY(d.Total); })
-      .style("fill", function(d) { return color(d.Area); });
+        //Ajustar las escalas segun los valores de los datos que pasaron el filtro
+        scaleX
+          .domain(
+            d3.extent(filteredData, function(d) {
+              return d.Year;
+            })
+          )
+          .nice();
+        scaleY
+          .domain(
+            d3.extent(filteredData, function(d) {
+              return d.Total;
+            })
+          )
+          .nice();
 
-      var legend = svg.selectAll(".legend")
-      .data(color.domain())
-      .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+        //Cambiar los elementos graficos de las escalas cada vez que se cambie el filtro
+        d3
+          .transition(svg)
+          .select(".y.axis")
+          .transition()
+          .duration(500)
+          .call(yAxis);
 
-      legend.append("rect")
-      .attr("x", width - 18)
-      .attr("width", 18)
-      .attr("height", 18)
-      .style("fill", color);
+        d3
+          .transition(svg)
+          .select(".x.axis")
+          .transition()
+          .duration(500)
+          .call(xAxis);
 
-      legend.append("text")
-      .attr("x", width - 24)
-      .attr("y", 9)
-      .attr("dy", ".35em")
-      .style("text-anchor", "end")
-      .text(function(d) { return d; });
+        //SelectAll: Hacer binding de los puntos con los datos
+        var dots = svg
+          .selectAll(".dot")
+          .data(filteredData)
+          .attr("fill", function(d) {
+            return color(d.Area);
+          });
+
+        //Exit: Borrar los puntos que sobran
+        dots
+          .exit()
+          .transition()
+          .duration(500)
+          .attr("r", 0)
+          .remove();
+
+        //Enter: Crear los puntos que hagan falta
+        dots
+          .enter()
+          .append("circle")
+          .attr("class", "dot")
+          .attr("r", 3.5)
+          .attr("cx", function(d) {
+            console.log(scaleX(d.Year));
+            return scaleX(d.Year);
+          })
+          .attr("cy", function(d) {
+            console.log(scaleX(d.Total));
+            return scaleY(d.Total);
+          })
+          .attr("fill", function(d) {
+            return color(d.Area);
+          })
+          .merge(dots)
+          .transition()
+          .duration(500);
+
+        //Update: Actualizar la posicion de los puntos que se reutilizaron, segun los nuevos datos
+        dots
+          .transition()
+          .duration(500)
+          .attr("r", 3.5)
+          .attr("cx", function(d) {
+            console.log(scaleX(d.Year));
+            return scaleX(d.Year);
+          })
+          .attr("cy", function(d) {
+            console.log(scaleX(d.Total));
+            return scaleY(d.Total);
+          });
+      }
     }
   });
 
-</script>
+  </script>
 </body>
 
 </html>
